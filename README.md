@@ -18,7 +18,7 @@ Job Finder junta cada día las ofertas de más de 15 webs, les pone nota según 
 
 | Necesitas | Para |
 |---|---|
-| [Python 3](https://www.python.org/downloads/) | El buscador y el panel (gratis) |
+| [Python 3.11+](https://www.python.org/downloads/) y Windows | El buscador y el panel (gratis). En Mac o Linux funciona con `python -m jobfinder`, pero los `.bat` no. |
 | [Claude Code](https://claude.com/claude-code) (plan Pro o superior) | `/empezar`, `/revisar`, `/aplicar`, `/entrevista` |
 | [Node.js](https://nodejs.org) 22+ y Brave, Chrome o Edge | Que Claude rellene formularios (`/aplicar`) |
 
@@ -158,7 +158,7 @@ Los comandos viven en `.claude/skills/` y Claude Code los carga solos al abrir l
 | `/entrevista <empresa>` | Junta la oferta, los correos y tu CV: de qué va el puesto, preguntas probables, cómo cubrir tus huecos y un simulacro. |
 
 Para `/aplicar`:
-1. Ejecuta `abrir-brave.bat`: abre un navegador aparte (`data/sesion-brave`) que Claude puede controlar. Si usas Chrome o Edge, cambia la ruta en el `.bat`.
+1. Ejecuta `abrir-brave.bat`: abre un navegador aparte (`data/sesion-brave`) que Claude puede controlar. Usa Brave si lo tienes y, si no, Chrome o Edge.
 2. Inicia sesión tú mismo en tus portales de empleo; las sesiones se guardan en ese perfil.
 3. Claude rellena los formularios con `tools/nav.js` siguiendo `docs/portales.md` (trucos de SuccessFactors, Workday, Greenhouse…). Los datos salen de `perfil/datos_formularios.md`: lo que no sepa te lo pregunta una sola vez y lo apunta.
 
@@ -205,3 +205,7 @@ tools/carta_pdf.py        convierte una carta .txt a PDF
 schtasks /create /tn "JobFinder" /sc daily /st 08:00 /tr "\"C:\ruta\a\job-finder\buscar.bat\"" /f
 ```
 Cambia la ruta por la de tu carpeta.
+
+## Licencia
+
+MIT: úsalo, cámbialo y compártelo libremente.

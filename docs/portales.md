@@ -29,6 +29,16 @@ Lo aprendido rellenando candidaturas de verdad con `tools/nav.js` sobre el naveg
 - Formularios de una sola página, normalmente sin cuenta. `fill` y `upload` funcionan bien.
 - Preguntas abiertas frecuentes ("¿por qué nosotros?"): redáctalas a partir del CV y la oferta y enséñaselas al usuario antes de enviar.
 
+## Teamtailor (`empleo.<empresa>.com`, `talento.<empresa>.com`)
+- Botón "Enviar solicitud" con `realclick` (el `click` normal no abre el formulario). Rechaza antes las cookies.
+- Formulario HTML normal, sin cuenta: `fill`, radios con `.click()` y `upload '#candidate_resume_remote_url' <cv.pdf>` funcionan. La carta va en un textarea.
+- Algunas empresas piden marcar `candidate[consent_given]`; otras lo dan por aceptado al enviar. El envío correcto lleva a `/applications/<id>/thanks/...`.
+
+## Manatal (`<empresa>.careers-page.com`)
+- El formulario vive dentro de un **shadowRoot**: `fields` y `fill` no lo ven. Busca los elementos con `host.shadowRoot.querySelector`, enfoca y escribe con `Input.insertText`.
+- Desplegables Radix (`button[role=combobox]`): clic real en el botón y luego clic real en `[role=option]`, que aparece fuera del shadowRoot, en `document`. Los ids cambian tras cada cambio.
+- CV: `DOM.setFileInputFiles` sobre el `input[type=file]` del shadowRoot. La casilla de términos es un `button[role=checkbox]`.
+
 ## Tecnoempleo
 - Inicio de sesión persistente. Aplicar = botón "Inscribirme" en la oferta, a veces con preguntas de filtro.
 - La ubicación "Remoto" no siempre es remoto: lee la ubicación real en la descripción.
