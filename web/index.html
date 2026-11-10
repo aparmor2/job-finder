@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Finder</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #f6f5f2; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e4e2dc;
+    --accent: #2f5bd3; --accent-ink: #fff; --good: #1f8a4c; --mid: #b7791f; --low: #8a8984; --bad: #c0392b;
+    --good-bg: #e6f4ec; --bad-bg: #fbeaea; --chip: #efede8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151514; --panel: #1f1f1d; --ink: #ecebe7; --muted: #9b9a95; --line: #33322f;
+      --accent: #7c9cff; --accent-ink: #0f1430; --good: #4cc27f; --mid: #e0a64a; --low: #77766f; --bad: #ef6b5b;
+      --good-bg: #1d3326; --bad-bg: #3a2220; --chip: #2a2a27; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
+  header .who { color: var(--muted); font-size: 13px; }
+  header .spacer { flex: 1; }
+  #status { color: var(--muted); font-size: 13px; text-align: right; }
+  .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .btn.small { padding: 3px 8px; font-size: 12px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 18px 24px 60px; }
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+  .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--muted); font-size: 12px; }
+  .stat.alert b { color: var(--bad); }
+  nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  nav.tabs button { border: 0; background: none; padding: 8px 14px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  nav.tabs button.on { color: var(--ink); border-color: var(--accent); font-weight: 600; }
+  .filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; }
+  .filters input[type=search] { flex: 1 1 220px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: var(--bg); }
+  .filters select { border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; background: var(--bg); }
+  .filters label { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+  .chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 3px 10px; font-size: 12px; cursor: pointer; color: var(--muted); }
+  .chip.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  .count { color: var(--muted); font-size: 13px; margin: 0 0 8px 2px; }
+  .job { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .job.dim { opacity: .55; }
+  .score { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-variant-numeric: tabular-nums; border: 3px solid var(--low); color: var(--low); }
+  .score.g { border-color: var(--good); color: var(--good); } .score.m { border-color: var(--mid); color: var(--mid); }
+  .job h3 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+  .job h3 a { color: var(--ink); text-decoration: none; } .job h3 a:hover { text-decoration: underline; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .meta .new { color: var(--accent); font-weight: 600; }
+  .why { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .why span { font-size: 11.5px; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+  .why span.p { background: var(--good-bg); color: var(--good); } .why span.n { background: var(--bad-bg); color: var(--bad); }
+  .actions { display: flex; gap: 6px; align-items: center; }
+  .actions select { border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; background: var(--bg); font-size: 13px; }
+  .empty { text-align: center; color: var(--muted); padding: 40px; }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; }
+  th { color: var(--muted); font-weight: 600; background: var(--bg); }
+  td textarea { width: 100%; min-height: 34px; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; background: var(--bg); resize: vertical; }
+  .badge { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; background: var(--bad-bg); color: var(--bad); font-weight: 600; }
+  pre.log { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; white-space: pre-wrap; font-size: 12.5px; max-height: 70vh; overflow: auto; }
+  /* Panel lateral de detalle */
+  #drawer { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; z-index: 10; }
+  #drawer.on { display: block; }
+  #drawer .panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(760px, 100%); background: var(--panel); overflow: auto; padding: 22px 26px 40px; box-shadow: -8px 0 30px rgba(0,0,0,.2); }
+  #drawer h2 { margin: 0 0 4px; font-size: 20px; }
+  #drawer h4 { margin: 20px 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  #drawer .desc { white-space: pre-wrap; font-size: 13.5px; background: var(--bg); border-radius: 8px; padding: 12px; max-height: 420px; overflow: auto; }
+  #drawer textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--bg); resize: vertical; }
+  #drawer .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  #drawer .close { position: absolute; top: 14px; right: 18px; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--panel); padding: 8px 16px; border-radius: 8px; font-size: 13px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+  .toast.on { opacity: 1; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+  .mailbox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+  .mailbox .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .mailbox table { margin-top: 10px; border: 0; }
+  .kind { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); font-weight: 600; white-space: nowrap; }
+  .kind.rechazo { background: var(--bad-bg); color: var(--bad); }
+  .kind.entrevista { background: var(--good-bg); color: var(--good); }
+  .mail { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 13px; }
+  .mail .snip { color: var(--muted); margin-top: 4px; }
+  @media (max-width: 800px) { .stats { grid-template-columns: repeat(3, 1fr); } .job { grid-template-columns: 44px 1fr; } .actions { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Job Finder</h1><div class="who"></div></div>
+  <div class="spacer"></div>
+  <div id="status">…</div>
+  <button class="btn primary" id="refresh">Buscar ofertas ahora</button>
+</header>
+
+<main>
+  <section class="stats" id="stats"></section>
+
+  <nav class="tabs">
+    <button data-tab="ofertas" class="on">Ofertas</button>
+    <button data-tab="seguimiento">Seguimiento</button>
+    <button data-tab="registro">Registro de búsqueda</button>
+  </nav>
+
+  <section id="tab-ofertas">
+    <div class="filters">
+      <input type="search" id="q" placeholder="Buscar puesto, empresa, tecnología…">
+      <label>Nota mín. <input type="range" id="min" min="0" max="90" step="5" value="50"> <b id="minv">50</b></label>
+      <select id="estado">
+        <option value="pend">Pendientes (nuevas + me interesa)</option>
+        <option value="all">Todos los estados</option>
+        <option value="nueva">Nuevas</option><option value="interesa">Me interesa</option>
+        <option value="aplicada">Aplicadas</option><option value="descartada">Descartadas</option>
+      </select>
+      <select id="fuente"><option value="">Todas las fuentes</option></select>
+      <select id="orden"><option value="score">Mejor nota</option><option value="fecha">Más recientes</option></select>
+      <label><input type="checkbox" id="hoy"> Solo últimas 24 h</label>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="count" id="count"></div>
+    <div id="list"></div>
+  </section>
+
+  <section id="tab-seguimiento" hidden>
+    <div class="mailbox" id="mailbox"></div>
+    <p class="hint">Candidaturas en marcha. A los 7 días sin respuesta toca follow-up: un mensaje corto al reclutador multiplica las respuestas.</p>
+    <div id="track"></div>
+  </section>
+
+  <section id="tab-registro" hidden>
+    <div id="fuentes"></div>
+    <pre class="log" id="log">Sin búsquedas todavía.</pre>
+  </section>
+</main>
+
+<div id="drawer"><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let BUCKETS = {};  // zonas: se cargan de /api/zonas
+const ESTADOS = { nueva: "Nueva", interesa: "★ Me interesa", aplicada: "Aplicada", entrevista: "Entrevista",
+  oferta: "Oferta", rechazada: "Rechazada", descartada: "Descartada" };
+const TIPOS = { rechazo: "Rechazo", entrevista: "Entrevista", recibida: "Acuse de recibo", otro: "Correo" };
+const kind = k => `<span class="kind ${esc(k)}">${TIPOS[k] || esc(k)}</span>`;
+const SKILL_NAMES = { sql: "SQL", ".net": ".NET", "c#": "C#", "asp.net": "ASP.NET", "vb.net": "VB.NET", java: "Java", "c++": "C++",
+  javascript: "JavaScript", typescript: "TypeScript", react: "React", "api rest": "APIs REST", git: "Git",
+  "casos de prueba": "casos de prueba", "test cases": "test cases", "pruebas funcionales": "pruebas funcionales",
+  "functional testing": "functional testing", "analisis funcional": "análisis funcional", migracion: "migración de sistemas",
+  legacy: "legacy migration", cloudflare: "Cloudflare", agile: "Agile", scrum: "Scrum", jira: "Jira" };
+
+let jobs = [], perfil = null, chipsOn = new Set(), shown = 150;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const api = (path, body) => fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}).then(r => r.json());
+
+function ago(iso) {
+  if (!iso) return "";
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 3600) return `hace ${Math.max(1, Math.round(s / 60))} min`;
+  if (s < 86400) return `hace ${Math.round(s / 3600)} h`;
+  return `hace ${Math.round(s / 86400)} d`;
+}
+const days = iso => iso ? Math.floor((Date.now() - new Date(iso)) / 86400000) : null;
+const scoreCls = n => n >= 70 ? "g" : n >= 50 ? "m" : "";
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); setTimeout(() => t.classList.remove("on"), 1800); }
+async function copy(text, msg = "Copiado") { await navigator.clipboard.writeText(text); toast(msg); }
+
+async function load() {
+  jobs = await api("/api/jobs");
+  const fuentes = [...new Set(jobs.map(j => j.source))].sort();
+  const sel = $("#fuente"), cur = sel.value;
+  sel.innerHTML = '<option value="">Todas las fuentes</option>' + fuentes.map(f => `<option ${f === cur ? "selected" : ""}>${esc(f)}</option>`).join("");
+  render();
+}
+
+function stats() {
+  const n24 = jobs.filter(j => days(j.first_seen) < 1 && j.score >= 50 && j.status === "nueva").length;
+  const top = jobs.filter(j => j.score >= 70 && j.status === "nueva").length;
+  const by = s => jobs.filter(j => j.status === s).length;
+  const fu = jobs.filter(j => j.status === "aplicada" && days(j.applied_at) >= 7).length;
+  $("#stats").innerHTML = [
+    [n24, "Nuevas buenas (24 h)", "hoy"], [top, "Top ≥70 sin revisar", "top"], [by("interesa"), "Me interesan", "interesa"],
+    [by("aplicada"), "Aplicadas", "seg"], [by("entrevista"), "Entrevistas", "seg"], [fu, "Follow-up pendiente", "seg", fu > 0]
+  ].map(([v, l, act, alert]) => `<div class="stat ${alert ? "alert" : ""}" data-act="${act}"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+
+function filtered() {
+  const q = norm($("#q").value.trim()), min = +$("#min").value, est = $("#estado").value, src = $("#fuente").value, hoy = $("#hoy").checked;
+  let list = jobs.filter(j =>
+    j.score >= min && chipsOn.has(j.bucket) && (!src || j.source === src) && (!hoy || days(j.first_seen) < 1) &&
+    (est === "all" || (est === "pend" ? (j.status === "nueva" || j.status === "interesa") : j.status === est)) &&
+    (!q || norm(`${j.title} ${j.company} ${j.location} ${j.skills.join(" ")}`).includes(q)));
+  if ($("#orden").value === "fecha") list.sort((a, b) => (b.posted || b.first_seen).localeCompare(a.posted || a.first_seen));
+  return list;
+}
+
+function chips() {
+  const base = jobs.filter(j => j.score >= +$("#min").value);
+  $("#chips").innerHTML = Object.entries(BUCKETS).map(([k, l]) =>
+    `<button class="chip ${chipsOn.has(k) ? "on" : ""}" data-b="${k}">${l} · ${base.filter(j => j.bucket === k).length}</button>`).join("");
+}
+
+function statusSelect(j) {
+  return `<select data-status="${esc(j.id)}">${Object.entries(ESTADOS).map(([k, l]) => `<option value="${k}" ${k === j.status ? "selected" : ""}>${l}</option>`).join("")}</select>`;
+}
+
+function whyChips(j, max = 6) {
+  return j.reasons.slice(0, max).map(r => `<span class="${r.startsWith("+") ? "p" : r.startsWith("-") ? "n" : ""}">${esc(r)}</span>`).join("");
+}
+
+function render() {
+  stats(); chips();
+  const list = filtered();
+  $("#count").textContent = `${list.length} ofertas` + (list.length > shown ? ` · mostrando ${shown}` : "");
+  $("#list").innerHTML = list.length ? list.slice(0, shown).map(j => `
+    <article class="job ${j.status === "descartada" ? "dim" : ""}">
+      <div class="score ${scoreCls(j.score)}">${j.score}</div>
+      <div>
+        <h3><a href="#" data-open="${esc(j.id)}">${esc(j.title)}</a></h3>
+        <div class="meta">${esc(j.company || "—")} · ${esc(j.location || "sin ubicación")} · ${esc(j.source)}
+          · ${days(j.first_seen) < 1 ? '<span class="new">nueva</span>' : "vista " + ago(j.first_seen)}${j.posted ? " · publicada " + ago(j.posted) : ""}${j.salary ? " · " + esc(j.salary) : ""}${j.n_mail ? ` · ✉ ${j.n_mail}` : ""}</div>
+        <div class="why">${whyChips(j)}</div>
+      </div>
+      <div class="actions">
+        <button class="btn small" title="Me interesa" data-quick="interesa">★</button>
+        <button class="btn small" title="Descartar" data-quick="descartada">✕</button>
+        ${statusSelect(j)}
+        <a class="btn small" href="${esc(j.url)}" target="_blank" rel="noopener">Abrir ↗</a>
+      </div>
+    </article>`).join("") + (list.length > shown ? `<div class="empty"><button class="btn" id="more">Mostrar más</button></div>` : "")
+    : `<div class="empty">Nada con estos filtros. Baja la nota mínima o activa más zonas.</div>`;
+  renderTrack();
+}
+
+function renderTrack() {
+  const list = jobs.filter(j => ["interesa", "aplicada", "entrevista", "oferta", "rechazada"].includes(j.status))
+    .sort((a, b) => (b.status_at || "").localeCompare(a.status_at || ""));
+  $("#track").innerHTML = list.length ? `<table><thead><tr><th>Nota</th><th>Puesto</th><th>Estado</th><th>Aplicada</th><th>Siguiente paso</th><th style="width:28%">Notas</th></tr></thead><tbody>${
+    list.map(j => {
+      const d = days(j.applied_at);
+      const mail = j.last_mail ? `${kind(j.last_mail)} <span class="meta">✉ ${j.n_mail}</span><br>` : "";
+      const step = mail + (j.status === "interesa" ? "Preparar candidatura"
+        : j.status === "aplicada" && d >= 7 ? `<span class="badge">Toca follow-up</span> <button class="btn small" data-follow="${esc(j.id)}">Copiar mensaje</button>`
+        : j.status === "aplicada" ? `Esperar (${7 - d} d)` : j.status === "entrevista" ? "Preparar entrevista" : "");
+      return `<tr><td><b>${j.score}</b></td><td><a href="#" data-open="${esc(j.id)}">${esc(j.title)}</a><div class="meta">${esc(j.company)} · ${esc(j.location)}</div></td>
+        <td class="actions">${statusSelect(j)}</td><td>${j.applied_at ? new Date(j.applied_at).toLocaleDateString("es-ES") + `<div class="meta">hace ${d} d</div>` : "—"}</td>
+        <td>${step}</td><td><textarea data-notes="${esc(j.id)}" placeholder="Contacto, fecha entrevista…">${esc(j.notes)}</textarea></td></tr>`;
+    }).join("")}</tbody></table>` : `<div class="empty">Aún nada. Marca ofertas con ★ o como "Aplicada" y aparecerán aquí.</div>`;
+}
+
+async function setStatus(id, status) {
+  await api(`/api/jobs/${encodeURIComponent(id)}`, { status });
+  const j = jobs.find(x => x.id === id);
+  j.status = status; j.status_at = new Date().toISOString();
+  if (status === "aplicada" && !j.applied_at) j.applied_at = j.status_at;
+  render();
+  toast(`Marcada: ${ESTADOS[status]}`);
+}
+async function saveNotes(id, notes) {
+  await api(`/api/jobs/${encodeURIComponent(id)}`, { notes });
+  jobs.find(x => x.id === id).notes = notes;
+  toast("Notas guardadas");
+}
+
+// ---------- Kit de candidatura
+function encaje(skills, lang) {
+  const nice = [...new Set(skills.map(s => SKILL_NAMES[s] || s).filter(Boolean))].slice(0, 4);
+  if (!nice.length) return "";
+  const list = nice.length > 1 ? nice.slice(0, -1).join(", ") + (lang === "en" ? " and " : " y ") + nice.at(-1) : nice[0];
+  return lang === "en" ? `\nFrom the job description, I believe I am a strong fit thanks to my hands-on experience with ${list}.\n`
+                       : `\nPor lo que describe la oferta, creo que encajo especialmente por mi experiencia práctica con ${list}.\n`;
+}
+function carta(j, lang) {
+  const t = lang === "en" ? perfil.carta_en : perfil.carta_es;
+  return t.replaceAll("{empresa}", j.company || (lang === "en" ? "the" : "la empresa")).replaceAll("{puesto}", j.title).replaceAll("{encaje}", encaje(j.skills, lang));
+}
+function promptIA(j, lang) {
+  return `Actúa como experto en selección de personal IT en España. Te paso mi CV y una oferta de empleo.
+
+1. En 3 líneas: ¿encajo? ¿Qué dudas tendrá el reclutador al leer mi CV y cómo las neutralizo?
+2. Reescribe el PERFIL de mi CV (máx. 4 líneas) adaptado a esta oferta, usando sus palabras clave. NO inventes experiencia que no tengo.
+3. Dime qué 3 puntos de mi CV debo destacar o reordenar para esta oferta.
+4. Escribe una carta de presentación de máximo 150 palabras en ${lang === "en" ? "inglés" : "español"}, directa y sin frases vacías.
+5. Dame 5 preguntas probables de entrevista para este puesto y una pista de respuesta basada en mi experiencia real.
+
+=== MI CV ===
+${perfil.cv}
+
+=== OFERTA: ${j.title} — ${j.company} (${j.location}) ===
+${(j.description || "").slice(0, 7000)}
+
+Enlace: ${j.url}`;
+}
+function followUp(j) {
+  return (perfil.followup || "").replaceAll("{puesto}", j.title).replaceAll("{empresa}", j.company || "su empresa");
+}
+
+async function openJob(id) {
+  const [j] = await Promise.all([api(`/api/jobs/${encodeURIComponent(id)}`), perfil ? null : api("/api/perfil").then(p => perfil = p)]);
+  const lang = j.lang;
+  $("#panel").innerHTML = `
+    <button class="btn close" data-close>Cerrar ✕</button>
+    <div class="row" style="margin-top:0"><div class="score ${scoreCls(j.score)}">${j.score}</div><div>
+      <h2>${esc(j.title)}</h2>
+      <div class="meta">${esc(j.company || "—")} · ${esc(j.location)} · ${esc(j.source)}${j.salary ? " · " + esc(j.salary) : ""}${j.posted ? " · publicada " + ago(j.posted) : ""}</div></div></div>
+    <div class="row"><a class="btn primary" href="${esc(j.url)}" target="_blank" rel="noopener">Abrir oferta ↗</a>${statusSelect(j)}</div>
+    <h4>Por qué esta nota</h4><div class="why">${whyChips(j, 20)}</div>
+    <h4>Kit de candidatura</h4>
+    <p class="hint">Carta generada desde tu plantilla (edítala en <code>perfil/carta_${lang}.txt</code>). Para un CV adaptado, copia el prompt y pégalo en Claude.ai o ChatGPT gratis.</p>
+    <div class="row">
+      <select id="lang"><option value="es" ${lang === "es" ? "selected" : ""}>Español</option><option value="en" ${lang === "en" ? "selected" : ""}>English</option></select>
+      <button class="btn" id="cp-carta">Copiar carta</button>
+      <button class="btn" id="cp-prompt">Copiar prompt para IA</button>
+      <button class="btn" id="cp-cv">Copiar CV en texto</button>
+      <button class="btn primary" id="cp-claude" title="Pégalo en Claude Code dentro de esta carpeta">Aplicar con Claude</button>
+    </div>
+    <textarea id="carta" rows="14" style="margin-top:8px">${esc(carta(j, lang))}</textarea>
+    ${j.emails && j.emails.length ? `<h4>Correos (${j.emails.length})</h4>${j.emails.map(m => `
+      <div class="mail">${kind(m.kind)} <b>${esc(m.subject)}</b><div class="meta">${esc(m.sender)} · ${new Date(m.received).toLocaleString("es-ES")}</div>
+      <div class="snip">${esc(m.snippet.slice(0, 400))}${m.snippet.length > 400 ? "…" : ""}</div></div>`).join("")}` : ""}
+    <h4>Notas</h4>
+    <textarea data-notes="${esc(j.id)}" rows="3" placeholder="Contacto, salario hablado, fecha de entrevista…">${esc(j.notes)}</textarea>
+    <h4>Descripción</h4><div class="desc">${esc(j.description || "Sin descripción en la fuente. Ábrela en la web.")}</div>`;
+  $("#lang").onchange = e => $("#carta").value = carta(j, e.target.value);
+  $("#cp-carta").onclick = () => copy($("#carta").value, "Carta copiada");
+  $("#cp-prompt").onclick = () => copy(promptIA(j, $("#lang").value), "Prompt copiado: pégalo en Claude.ai");
+  $("#cp-cv").onclick = () => copy(perfil.cv, "CV copiado");
+  $("#cp-claude").onclick = () => copy(`/aplicar ${j.id}`, "Comando copiado: pégalo en Claude Code");
+  $("#drawer").classList.add("on");
+}
+
+// ---------- Correo
+async function loadMail() {
+  const m = await api("/api/mail");
+  if (!m.configurado) {
+    $("#mailbox").innerHTML = `<b>Correo sin conectar.</b> <span class="hint">Ejecuta <code>configurar-correo.bat</code> con una contraseña de aplicación de Gmail
+      y el dashboard leerá las respuestas de las empresas (rechazos, entrevistas) y actualizará el estado solo.</span>`;
+    return;
+  }
+  const last = m.last ? (m.last.error ? `<span class="badge">error</span> ${esc(m.last.error)}` : `revisado ${ago(m.last.at)}`) : "sin revisar todavía";
+  $("#mailbox").innerHTML = `<div class="row"><b>Correo</b><span class="hint">${last} · se revisa cada hora</span>
+      <button class="btn small" id="mail-now">Revisar correo ahora</button></div>
+    ${m.correos.length ? `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Asunto</th><th>Candidatura</th></tr></thead><tbody>${m.correos.map(c => `
+      <tr><td>${new Date(c.received).toLocaleDateString("es-ES")}</td><td>${kind(c.kind)}</td>
+      <td>${esc(c.subject)}<div class="meta">${esc(c.sender)}</div></td>
+      <td>${c.job_id ? `<a href="#" data-open="${esc(c.job_id)}">${esc(c.company)}</a><div class="meta">${esc(c.title)}</div>` : '<span class="meta">sin asociar</span>'}</td></tr>`).join("")}</tbody></table>`
+      : '<p class="hint">Aún no hay correos de tus candidaturas.</p>'}`;
+}
+
+// ---------- Búsqueda y estado
+let polling = null;
+async function status() {
+  const s = await api("/api/status");
+  const btn = $("#refresh");
+  btn.disabled = s.running;
+  btn.textContent = s.running ? `Buscando… ${s.current || ""}` : "Buscar ofertas ahora";
+  $("#status").innerHTML = s.last ? `Última búsqueda ${ago(s.last.at)}<br>${s.last.nuevas} ofertas nuevas` : "Sin búsquedas todavía";
+  $("#log").textContent = s.log.length ? s.log.join("\n") : "Sin registro en esta sesión.";
+  if (s.last && s.last.fuentes) $("#fuentes").innerHTML = `<table style="margin-bottom:12px"><thead><tr><th>Fuente</th><th>Ofertas</th><th>Nuevas</th></tr></thead><tbody>${
+    Object.entries(s.last.fuentes).map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v.error ? `<span class="badge">error</span> ${esc(v.error)}` : v.total}</td><td>${v.nuevas ?? ""}</td></tr>`).join("")}</tbody></table>`;
+  if (s.running && !polling) polling = setInterval(status, 2000);
+  if (!s.running && polling) { clearInterval(polling); polling = null; load(); loadMail(); }
+}
+
+// ---------- Eventos
+$("#refresh").onclick = async () => { await api("/api/refresh", {}); status(); setTimeout(status, 500); };
+["#q", "#min", "#estado", "#fuente", "#orden", "#hoy"].forEach(s => $(s).addEventListener("input", () => { shown = 150; $("#minv").textContent = $("#min").value; render(); }));
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-open],[data-b],[data-quick],[data-close],[data-follow],[data-tab],[data-act],#more,#mail-now");
+  if (!t) { if (e.target.id === "drawer") $("#drawer").classList.remove("on"); return; }
+  if (t.dataset.open) { e.preventDefault(); openJob(t.dataset.open); }
+  else if (t.dataset.b) { chipsOn.has(t.dataset.b) ? chipsOn.delete(t.dataset.b) : chipsOn.add(t.dataset.b); render(); }
+  else if (t.dataset.quick) setStatus(t.closest(".job").querySelector("[data-status]").dataset.status, t.dataset.quick);
+  else if (t.dataset.close !== undefined) $("#drawer").classList.remove("on");
+  else if (t.dataset.follow) copy(followUp(jobs.find(j => j.id === t.dataset.follow)), "Mensaje de follow-up copiado");
+  else if (t.dataset.tab) tab(t.dataset.tab);
+  else if (t.dataset.act) {
+    if (t.dataset.act === "seg") return tab("seguimiento");
+    tab("ofertas");
+    $("#estado").value = t.dataset.act === "interesa" ? "interesa" : "nueva";
+    $("#hoy").checked = t.dataset.act === "hoy";
+    $("#min").value = t.dataset.act === "top" ? 70 : 50; $("#minv").textContent = $("#min").value;
+    render();
+  }
+  else if (t.id === "more") { shown += 150; render(); }
+  else if (t.id === "mail-now") {
+    t.disabled = true; t.textContent = "Revisando…";
+    api("/api/mail", {}).then(r => { toast(r.error || (r.result ? `${r.result.nuevos} correos nuevos · ${r.result.cambios} cambios de estado` : "No se pudo revisar")); load(); loadMail(); });
+  }
+});
+document.addEventListener("change", e => {
+  if (e.target.dataset.status) setStatus(e.target.dataset.status, e.target.value);
+  if (e.target.dataset.notes) saveNotes(e.target.dataset.notes, e.target.value);
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#drawer").classList.remove("on"); });
+function tab(name) {
+  document.querySelectorAll("nav.tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  ["ofertas", "seguimiento", "registro"].forEach(n => $("#tab-" + n).hidden = n !== name);
+}
+
+api("/api/perfil").then(p => {
+  perfil = p;
+  const [nombre, titular] = (p.cv || "").split(/\r?\n/).map(l => l.trim());
+  $(".who").textContent = [nombre, titular].filter(Boolean).join(" · ");
+});
+// Las zonas salen de config.json (perfil.ubicacion): nombres, orden y cuáles se ven al abrir
+api("/api/zonas").then(zs => {
+  BUCKETS = Object.fromEntries(zs.map(z => [z.id, z.nombre]));
+  chipsOn = new Set(zs.filter(z => z.visible).map(z => z.id));
+  load();
+});
+status(); loadMail(); setInterval(status, 60000);
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+{
+  "_ayuda": "Edita este archivo para ajustar búsqueda y puntuación. Reinicia la app tras cambiarlo. Puntos positivos suben la nota, negativos la bajan (nota final 0-100).",
+
+  "servidor": { "puerto": 8765, "auto_refresco_horas": 6 },
+
+  "claves_api_gratis": {
+    "_ayuda": "Opcional, pero muy recomendable. Registro gratis: InfoJobs https://developer.infojobs.net · Adzuna https://developer.adzuna.com · Jooble https://jooble.org/api/about",
+    "infojobs_client_id": "",
+    "infojobs_client_secret": "",
+    "adzuna_app_id": "",
+    "adzuna_app_key": "",
+    "jooble_key": ""
+  },
+
+  "busqueda": {
+    "fuentes_desactivadas": [],
+    "linkedin_dias_correo": 4,
+    "terminos": ["junior", "qa tester", "analista funcional", "consultor junior", ".net junior", "react junior", "programador junior", "recién titulado informática"],
+    "ciudades": ["Valencia", "Bilbao", "Barcelona"],
+    "tecnoempleo_provincias": ["valencia", "bizkaia", "barcelona"],
+    "tecnoempleo_tecnologias": ["junior", "qa", "testing", ".net", "c#", "react", "java", "sql", "javascript"],
+    "ticjob_palabras": ["junior", "qa", "tester", "analista funcional", "consultor", ".net", "react", "java"],
+    "remotive_categorias": ["software-dev", "qa"],
+    "empresas": {
+      "_ayuda": "Slugs de portales de empleo públicos. Añade empresas: greenhouse = boards.greenhouse.io/<slug>, lever = jobs.lever.co/<slug>, ashby = jobs.ashbyhq.com/<slug>",
+      "greenhouse": ["cabify", "feverup", "datadog", "elastic", "gitlab", "newrelic", "n26", "typeform", "wallapop", "bitpanda"],
+      "lever": ["lodgify"],
+      "ashby": ["docplanner", "perk"]
+    },
+    "portales_empresa": {
+      "_ayuda": "Grandes empresas. Para añadir una: abre su web de empleo y mira la URL de una oferta. Si contiene 'myworkdayjobs.com' va en workday (URL hasta el nombre del sitio). Si la web es tipo SAP SuccessFactors (suele tener /job/ y /search/ y un pie 'Powered by SAP'), va en successfactors (solo el dominio). Si no tiene ninguna de esas, ponla en vigilar: la app avisará cuando aparezcan enlaces nuevos.",
+      "palabras": ["Valencia", "Bilbao", "Barcelona", "junior", "graduate", "remoto"],
+      "workday": [
+        { "nombre": "Accenture", "url": "https://accenture.wd103.myworkdayjobs.com/AccentureCareers" },
+        { "nombre": "BBVA", "url": "https://bbva.wd3.myworkdayjobs.com/BBVA" },
+        { "nombre": "Babel", "url": "https://babelgroup.wd103.myworkdayjobs.com/REC_External_Career_Site" }
+      ],
+      "successfactors": [
+        { "nombre": "Deloitte", "url": "https://empleo.es.deloitte.com" },
+        { "nombre": "Indra / Minsait", "url": "https://careers.indragroup.com" },
+        { "nombre": "EY", "url": "https://careers.ey.com" },
+        { "nombre": "Atos / Eviden", "url": "https://jobs.atos.net" },
+        { "nombre": "Power Electronics", "url": "https://jobs.power-electronics.com" }
+      ],
+      "vigilar": []
+    }
+  },
+
+  "perfil": {
+    "base": 10,
+
+    "ubicacion": {
+      "etiquetas": { "cerca": "Cerca de casa" },
+      "_ayuda": "Puntos según zona. 'cerca' = tu pueblo y alrededores (lo que más puntúa). Las demás zonas son ejemplos: cámbialas por las tuyas.",
+      "puntos": { "cerca": 30, "valencia": 26, "remoto": 22, "bilbao": 20, "barcelona": 20, "espana": 20, "extranjero": -45, "desconocido": 0 },
+      "cerca":     ["pon-aqui-tu-pueblo", "y-los-de-alrededor"],
+      "valencia":  ["valencia", "valència", "pla de carrese", "paterna", "burjassot", "mislata", "quart de poblet", "manises", "torrent", "alzira", "gandia", "aldaia", "alaquas", "alaquàs", "xirivella", "picassent", "silla", "catarroja", "godella", "rocafort", "betera", "bétera", "llíria", "lliria", "riba-roja", "ribarroja", "almussafes", "parc tecnologic", "parque tecnologico"],
+      "bilbao":    ["bilbao", "bizkaia", "vizcaya", "barakaldo", "getxo", "leioa", "derio", "zamudio", "basauri", "erandio", "sestao", "galdakao"],
+      "barcelona": ["barcelona", "bcn", "sant cugat", "hospitalet", "badalona", "terrassa", "sabadell", "cornella", "el prat", "castelldefels", "sant joan despi", "viladecans", "rubi", "mataro", "manresa", "granollers", "sant boi", "esplugues", "martorell"],
+      "remoto":    ["remoto", "remote", "teletrabajo", "100% remoto", "full remote", "anywhere", "worldwide", "work from home"],
+      "remoto_ok": ["spain", "espana", "españa", "europe", "europa", "emea", "eu", "cet", "worldwide", "anywhere", "global", "sin restriccion"],
+      "espana":    ["spain", "espana", "españa", "madrid", "malaga", "sevilla", "zaragoza", "alicante", "murcia", "castellon", "a coruna", "vigo", "gijon", "oviedo", "valladolid", "granada", "cordoba", "pamplona", "donostia", "san sebastian", "vitoria", "santander", "palma", "tenerife", "las palmas", "albacete", "toledo", "leon", "salamanca", "burgos", "cadiz", "huelva", "almeria", "jaen", "tarragona", "girona", "lleida", "logrono", "badajoz", "caceres", "elche", "cartagena"]
+    },
+
+    "rol_titulo": {
+      "_ayuda": "Palabras en el TÍTULO de la oferta y sus puntos (máximo sumado: tope_rol).",
+      "qa": 30, "tester": 30, "testing": 28, "quality assurance": 30, "calidad del software": 30, "calidad de software": 30, "qa engineer": 30, "test engineer": 28, "pruebas": 26, "automatizacion de pruebas": 26,
+      "analista funcional": 32, "functional analyst": 32, "business analyst": 26, "analista de negocio": 24, "consultor funcional": 28, "analista de sistemas": 16,
+      "consultor": 22, "consultora": 22, "consultant": 22, "consultoria": 18,
+      ".net": 22, "c#": 20, "asp.net": 22, "dotnet": 22, "vb.net": 22,
+      "analista programador": 18, "react": 16, "typescript": 16, "frontend": 14, "front-end": 14, "front end": 14, "javascript": 14, "full stack": 14, "fullstack": 14, "full-stack": 14,
+      "java": 10, "sql": 10, "data analyst": 8, "analista de datos": 8,
+      "desarrollador": 8, "developer": 8, "programador": 8, "software engineer": 8, "ingeniero de software": 10, "ingeniero informatico": 12, "web": 4,
+      "soporte": 3, "support engineer": 3, "helpdesk": 0, "tecnico de sistemas": 2
+    },
+    "tope_rol": 40,
+
+    "habilidades_cv": ["sql", ".net", "c#", "asp.net", "vb.net", "java", "c++", "javascript", "typescript", "react", "api rest", "rest", "git", "casos de prueba", "test cases", "testing", "pruebas funcionales", "functional testing", "analisis funcional", "requisitos", "requirements", "migracion", "legacy", "ingles", "english", "cloudflare", "agile", "scrum", "jira"],
+    "puntos_por_habilidad": 3,
+    "tope_habilidades": 21,
+
+    "junior": ["junior", "jr", "trainee", "graduate", "recien titulado", "recien graduado", "recien licenciado", "entry level", "entry-level", "sin experiencia", "practicas", "becario", "beca", "primer empleo", "intern", "internship", "early career", "new grad", "formacion a cargo"],
+    "puntos_junior_titulo": 18,
+    "puntos_junior_texto": 8,
+
+    "senior": ["senior", "sr", "lead", "principal", "staff", "architect", "arquitecto", "manager", "head", "director", "jefe", "responsable", "expert", "experto", "vp", "cto", "mid-senior", "mid senior"],
+    "puntos_senior_titulo": -35,
+
+    "antiguedad_dias": { "90": -20, "60": -12, "30": -5 },
+
+    "anos_experiencia": { "5": -30, "3": -20, "2": -8, "1": 2, "0": 5 },
+
+    "tecnologias_ajenas": ["plc", "scada", "sap", "abap", "cobol", "salesforce", "ios", "swift", "android", "kotlin", "golang", "rust", "ruby", "php", "magento", "databricks", "mainframe", "as400", "guidewire"],
+    "puntos_tecnologia_ajena": -5,
+
+    "no_es_mi_rol": ["ventas", "comercial", "sales", "account executive", "account manager", "recruiter", "reclutador", "talent acquisition", "marketing", "seo", "diseñador grafico", "graphic designer", "enfermer", "camarero", "customer success", "customer support", "atencion al cliente", "teleoperador", "contable", "accountant", "lawyer", "abogado", "electricista", "mecanico", "ingeniero electrico", "ingeniero electrico", "nurse", "physician", "driver", "chofer", "rater", "annotator", "annotation", "data labeling", "transcription", "virtual assistant"],
+    "puntos_no_es_mi_rol": -40,
+
+    "idiomas_requeridos": ["german", "aleman", "french", "frances", "italian", "italiano", "dutch", "neerlandes", "portuguese speaking", "polish", "swedish", "danish", "norwegian", "finnish", "japanese", "mandarin", "arabic", "turkish", "hebrew"],
+    "puntos_idioma_titulo": -30,
+    "puntos_idioma_texto": -10
+  }
+}

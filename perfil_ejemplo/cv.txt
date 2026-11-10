@@ -1,0 +1,24 @@
+Tu Nombre Apellidos
+Tu titular — p. ej. Desarrollador Junior · QA · Análisis Funcional
+Ciudad · 600 000 000 · tu.correo@ejemplo.com · linkedin.com/in/tu-perfil · github.com/tu-usuario
+
+PERFIL
+Dos o tres líneas: qué estudiaste, qué has hecho de lo que estés orgulloso y qué tipo de puesto buscas.
+
+EXPERIENCIA
+Puesto o proyecto (mes año – mes año)
+Empresa o institución
+- Qué hiciste, con qué tecnología y qué resultado medible tuvo.
+
+PROYECTOS
+Nombre del proyecto — enlace
+- Qué es, con qué está hecho y cifras reales si las tienes.
+
+FORMACIÓN
+Grado en ... (año – año), Universidad
+
+CONOCIMIENTOS
+Técnicos: ...
+
+IDIOMAS
+Español nativo · Inglés ...

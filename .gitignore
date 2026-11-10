@@ -1,0 +1,17 @@
+# Datos personales: nunca al repo
+config.json
+data/
+perfil/
+candidaturas/
+*.pdf
+tools/generar-cv.bat
+
+# Generados
+__pycache__/
+node_modules/
+package.json
+package-lock.json
+*.png
+
+# Ajustes locales de Claude Code
+.claude/settings.local.json
